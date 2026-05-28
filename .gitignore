@@ -1,0 +1,24 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+
+# Databases
+data/audit_log.db
+*.sqlite3
+
+# Large Datasets
+data/*.csv
+data/*.zip
+
+# IDEs
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
