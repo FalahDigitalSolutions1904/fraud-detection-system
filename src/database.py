@@ -34,6 +34,20 @@ def log_transaction(amount, v1, v2, prob, pred, latency):
     conn.commit()
     conn.close()
 
+def fetch_metrics(limit=500):
+    """Fetches the latest transaction metrics for the dashboard."""
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        # using row_factory to get dicts
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM transaction_logs ORDER BY timestamp DESC LIMIT ?', (limit,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict(row) for row in rows]
+    except Exception as e:
+        return []
+
 if __name__ == "__main__":
     init_db()
     print("🗄️ Audit log database initialized successfully!")

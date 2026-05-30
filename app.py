@@ -2,9 +2,11 @@ import time
 import joblib
 import numpy as np
 from flask import Flask, request, jsonify
-from src.database import init_db, log_transaction
+from flask_cors import CORS
+from src.database import init_db, log_transaction, fetch_metrics
 
 app = Flask(__name__)
+CORS(app)
 
 # Initialize the database on startup
 init_db()
@@ -13,9 +15,9 @@ init_db()
 try:
     XGB_MODEL = joblib.load("models/xgb_model.pkl")
     LGBM_MODEL = joblib.load("models/lgbm_model.pkl")
-    print("✅ Ensemble models loaded into memory successfully.")
+    print("[SUCCESS] Ensemble models loaded into memory successfully.")
 except FileNotFoundError:
-    print("❌ Error: Saved model files not found. Please run src/train.py first.")
+    print("[ERROR] Saved model files not found. Please run src/train.py first.")
     exit(1)
 
 @app.route("/predict", methods=["POST"])
@@ -70,6 +72,12 @@ def predict():
 def health():
     """Simple health check endpoint for monitoring uptime/CI/CD verification."""
     return jsonify({"status": "healthy", "timestamp": time.time()}), 200
+
+@app.route("/api/metrics", methods=["GET"])
+def metrics():
+    """Returns the latest transaction metrics for the frontend dashboard."""
+    logs = fetch_metrics(limit=500)
+    return jsonify({"metrics": logs}), 200
 
 if __name__ == "__main__":
     # In production, this would be served via gunicorn/uWSGI

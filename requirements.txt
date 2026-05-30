@@ -8,3 +8,4 @@ lightgbm
 streamlit
 plotly
 flask
+flask-cors
